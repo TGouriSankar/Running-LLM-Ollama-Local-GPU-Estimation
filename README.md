@@ -86,13 +86,14 @@ Running Open WebUI (Optional)
 
   - **Clone the Open WebUI repository**:
 
-    git clone https://github.com/open-webui/open-webui.git
+        git clone https://github.com/open-webui/open-webui.git
 
-- **Run Open WebUI in a Docker container:
+- **Run Open WebUI in a Docker container**:
 
-    docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
+      docker run -d -p 3000:8080 --add-host=host.docker.internal:host-gateway -v open-webui:/app/backend/data --name open-webui --restart always ghcr.io/open-webui/open-webui:main
 
     Access Open WebUI at http://localhost:3000 in your browser.
+---
 
 Additional Notes
 
