@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with LLM</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #chatbox { width: 400px; height: 500px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll; margin-bottom: 10px; }
+        #user-input { width: 350px; padding: 10px; }
+        #submit { width: 50px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Chat with LLM</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="user-input" placeholder="Type your message here">
+    <button id="submit">Send</button>
+
+    <script>
+        let eventSource;
+
+        async function sendMessage() {
+                const userInput = document.getElementById("user-input").value;
+                if (!userInput) return;
+
+                const chatbox = document.getElementById("chatbox");
+                chatbox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+
+                try {
+                    const response = await fetch('http://localhost:5000/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: userInput })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        chatbox.innerHTML += `<p><strong>LLM:</strong> Error: ${data.error}</p>`;
+                    } else {
+                        chatbox.innerHTML += `<p><strong>LLM:</strong> ${data}</p>`;
+                    }
+                } catch (error) {
+                    chatbox.innerHTML += `<p><strong>LLM:</strong> Error: ${error.message}</p>`;
+                }
+
+                chatbox.scrollTop = chatbox.scrollHeight;
+                document.getElementById("user-input").value = "";
+            }
+
+
+            // Initialize EventSource to listen to streaming data
+            eventSource = new EventSource('http://localhost:5000/chat');
+            eventSource.onmessage = function(event) {
+                const message = event.data;
+                
+                if (message === "[DONE]") {
+                    eventSource.close();
+                } else {
+                    chatbox.innerHTML += `<p><strong>LLM:</strong> ${message}</p>`;
+                    chatbox.scrollTop = chatbox.scrollHeight;  // Scroll to the bottom
+                }
+            };
+
+            document.getElementById("user-input").value = "";  // Clear input field
+
+        document.getElementById("submit").addEventListener("click", sendMessage);
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
