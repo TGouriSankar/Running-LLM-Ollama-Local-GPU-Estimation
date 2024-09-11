@@ -67,8 +67,8 @@ Running the Application
 
   - **Clone the LLM repository** and navigate to the application directory:
 
-    git clone <repository_url>
-    cd <repository_directory>
+        git clone <repository_url>
+        cd <repository_directory>
 
 - **Start the backend**:
 
